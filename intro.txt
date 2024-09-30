@@ -1,0 +1,209 @@
+################### 서버리스 아키텍처 ###################
+
+1. 서버리스(serverless)
+   - 서버를 관리하지 않아도 되는 클라우드 컴퓨팅 모델
+     ( EC2 가 없어도 애플리케이션으로 서비스( => 코드가 실행 )가 가능함. )
+     AWS 에서는 AWS Lambda 와 같은 서비스를 통해 서버리스 아키텍처를 
+     쉬게 구현할 수 있음.
+
+   - Client -> API Gateway( Http API, REST API ) -> AWS Lambda( 함수 )
+     -> DynamoDB
+
+   - AWS Lambda 는 코드를 실행하고 자동으로 확장(Lambda 가 증가)하여
+     필요한 컴퓨팅 리소스를 제공함으로 개발자는 코드 작성 및 실행에 집중할 수
+     있으며 인프라 관리에 대한 부담을 덜 수 있게 됨.
+
+   - 이벤트 기반 아키텍처를 지원함으로, 애플리케이션의 특정 이벤트가
+     발생할 때마다 자동으로 실행되도록 함.
+
+   - AWS 서버리스 아키텍처는 페이-애즈-유-로 모델을 따르므로,
+     사용한 만큼만 비용을 지불함으로 인프라 비용을 절감할 수 있음.
+
+2. 서버리스 아키텍처의 장점
+   - 개발 시간 단축
+     함수 단위로 작성해서 API 로 바로 제공됨으로
+     Spring  등의 F/W 로 갭발하는 것보다 빠른 개발이 가능함.
+   - 비용 절감
+     코드가 실제로 실행되는 컴퓨팅 시간(밀리초)만 지불함으로
+     동작하지 않는 동안의 리소스에 대한 비용을 지불할 필요가 없으므로
+     비용이 크게 절감이 됨.
+   - 자동 확장
+     auto scaling.
+     서버 관리나 인프라 확장에 대한 걱정 없이 코드 작성 및 애플리케이션 구축에
+     집중할 수 있음.
+   - 간편한 API 구축
+
+3. 서버리스 아키텍처의 구축 예
+   - 동기식
+     웹 애플리케이션, 웹 서비스, 마이크로 서비스 등
+
+     Amazon API Gateway 를 HTTP endPoint 로 사용해서
+     웹클라이언트가 API 를 호출하고 API Gateway 가 요청을 Lambda 로 
+     라우팅함.
+
+   - 비동기식
+     백그라운드에서 데이터를 처리.
+     이미지/비디오 조작 및 처리, 비 데이터 처리 등
+
+4. AWS 서버리스 아키텍처
+   - AWS Lambda
+     서버를 관리할 필요 없이 코드를 실행할 수 있는 컴퓨팅 서비스.
+     Node.js, Python, Java 등 다양한 언어로 코드를 작성할 수 있음.
+     수신되는 트래픽 양에 따라 애플리케이션의 크기를 자동으로 조정.
+   - AWS API Gateway
+     API 를 생성, 게시 및 관리할 수 있는 관리형 서비스.
+     AWS Lambda 함수와 통합되는 REST API 를 만들 수 있음.
+   - AWS DynamoDB
+     관리형 NoSQL 데이터베이스 서비스.
+     서버리스 애플리케이션에서 자주 사용됨.
+   - 기타
+
+5. 백엔드를 서버리스로 AWS 를 사용한다면
+   - 향상된 확장성
+     AWS 서버리스를 통해 확장 및 배포가 용이하여 빠르게 성장하는 조직이나
+     빠른 개발이 필요한 애플리케이션에 유용
+   - 비용 절감
+     사용하는 리소스에 대한 비용만 지불하게됨으로 조직의 서비스 운영 비용을
+     절감
+   - 운영 부담 감소
+     서버 인스턴스를 관리할 필요가 없으므로 백엔드 팀의 인프라 운영
+     부담의 감소
+
+6. Lambda 및 DynamoDB 를 사용한 CRUD HTTP API 작성
+
+AWS 자습서 URL
+https://docs.aws.amazon.com/ko_kr/apigateway/latest/developerguide/http-api-dynamo-db.html
+
+1단계: DynamoDB 테이블 생성
+2단계: Lambda 함수 생성
+3단계: HTTP API 생성
+4단계: 경로 생성
+5단계: 통합 생성
+6단계: 경로에 통합 연결
+7단계: API 테스트
+
+전체 조회 : get
+https://lf2afyx6f6.execute-api.us-east-1.amazonaws.com/items
+
+등록 : put
+https://lf2afyx6f6.execute-api.us-east-1.amazonaws.com/items
+{
+    "id" : "2222",
+    "price" : 1000,
+    "name" : "name2"
+}
+
+한건 조회 : get
+https://lf2afyx6f6.execute-api.us-east-1.amazonaws.com/items/2222
+
+삭제 : delete
+https://lf2afyx6f6.execute-api.us-east-1.amazonaws.com/items/2222
+
+
+8단계: 정리
+
+
+
+
+7. Lambda 의 eventBridge 사용
+
+1분마다 DynamoDB 의 지정된 테이블에 데이터 등록하는 기능을 구현.
+
+1분마다 : 스케줄링을 위해서 eventBridge 를 Lambda에 연결
+
+
+7.1 테스트용 Lambda 생성
+   - Lambda name : eventTestFunction
+   - 자습서의 코드를 복붙
+   - 기존의 CURD 에서 C 를 제외한 나머지 코드는 모두 삭제
+
+   - 참고 : AWS API 문서 보기
+     Amazon DynamoDB 의 클라이언트 사용
+     https://docs.aws.amazon.com/ko_kr/sdk-for-javascript/v3/developer-guide/dynamodb-example-dynamodb-utilities.html
+     
+아래는 Lambda 코드임.
+
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
+
+const client = new DynamoDBClient({});
+
+const dynamo = DynamoDBDocumentClient.from(client);
+
+const tableName = "http-crud-tutorial-items";
+
+export const handler = async (event, context) => {
+  let body;
+  let statusCode = 200;
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  try {
+        await dynamo.send(
+          // 테이블에 항목 등록
+          new PutCommand({
+            TableName: tableName,
+            Item: {
+              // id 를 자동으로 생성하도록 해야 함.
+              id: String(Date.now()),
+              price: 1000,
+              name: "item name",
+            },
+          })
+        );
+        body = `Put item ${String(Date.now())}`;
+  } catch (err) {
+    statusCode = 400;
+    body = err.message;
+  } finally {
+    body = JSON.stringify(body);
+  }
+
+  return {
+    statusCode,
+    body,
+    headers,
+  };
+};
+
+   - eventTestFunction Lambda test
+     DynamoDB 에 test 데이터가 등록된 결과 확인.
+     => 데이터가 정상적으로 등록이 되었다면, Lambda code 에 문제가 없음.
+
+
+7.2 eventBridge 연결
+   - 규칙명 : dynamodb-1min-insert-timer
+   - 규칙 설명 : 1minute teimer
+   - 규칙 유형 : 예약 표현식
+   - 예약 표현식 : rate(1 minute)
+
+
+7.3 DynamoDB 에서 1분 단위로 데이터가 등록이 되는지 확인.
+
+
+
+
+
+7. AWS Cognito 사용
+   - 웹과 앱에 대한 인증, 권한 부여 및 사용자 관리 서비스임.
+
+     개발자는 손쉽게 애플리케이션에 사용자 인증, 권한 부여, 사용자 데이터 관리
+     기능을 통합할 수 있음.
+
+   - 두 가지 구성 요소
+     
+     사용자 풀(User Pool)
+        - 애플리케이션 사용자를 관리.
+        - 이 풀에서 제공하는 기능은 등록, 로그인, 로그아웃, 비밀번호 재설정, MFA
+        - 사용자 그룹 정책을 정의하여 각 사용자에 대해 맞춤형 권한 설정
+        - 사용자 인증을 완료하면 Cognito 는 JWT 를 사용자에게 반환함.
+          이 JWT 는 API Gateway 에서 자격증명으로 사용할 수 있음.
+     자격 증명 풀(Identity Pool)
+        - 애플리케이션이 AWS 리소스에 접근할 수 있도록 하는 권한 관리 시스템
+        - 사용자가 인증되었는지 여부에 따라 서로 다른 권한을 부여할 수 있음.
+        - 이를 통해서 애플리케이션은 인증된 사용자에게 특정 AWS 서비스(DynamoDB 등)
+          에 접근할 수 있는 자격 증명을 부여할 수 있음.
